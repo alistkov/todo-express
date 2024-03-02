@@ -1,22 +1,18 @@
-import express, { Express } from 'express';
-import { Server } from 'node:http';
+import express from 'express';
 
-export class App {
-  app: Express;
-  port: number;
-  server: Server;
+const bootstrap = (): void => {
+  const app = express();
+  const port = 8080;
 
-  constructor() {
-    this.app = express();
-    this.port = 8080;
-  }
-
-  public async init(): Promise<void> {
-    this.app.get('/', (req, res) => {
-      res.send('Running...');
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Ok',
     });
-    this.server = this.app.listen(this.port, () => {
-      console.log(`Server is running on http://localhost:${this.port}`);
-    });
-  }
-}
+  });
+
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+};
+
+export default bootstrap;
