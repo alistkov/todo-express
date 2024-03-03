@@ -1,22 +1,28 @@
-import express, { Express } from 'express';
-import { Server } from 'node:http';
+import express from 'express';
+import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+import { router as todosRouter } from './todos/todos';
 
-export class App {
-  app: Express;
-  port: number;
-  server: Server;
+const bootstrap = (): void => {
+  const app = express();
+  const port = 8080;
 
-  constructor() {
-    this.app = express();
-    this.port = 8080;
-  }
+  app.use(bodyParser.json());
 
-  public async init(): Promise<void> {
-    this.app.get('/', (req, res) => {
-      res.send('Running...');
+  mongoose
+    .connect('mongodb://127.0.0.1:27017/todo-app')
+    .then(() => {
+      console.log('Connected to MongoDB');
+    })
+    .catch((error) => {
+      console.error('Failed to connect to MongoDB', error);
     });
-    this.server = this.app.listen(this.port, () => {
-      console.log(`Server is running on http://localhost:${this.port}`);
-    });
-  }
-}
+
+  app.use('/api', todosRouter);
+
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+};
+
+export default bootstrap;
